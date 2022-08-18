@@ -59,7 +59,7 @@ func (client *Client) menu() bool {
 		client.flag = flag
 		return true
 	} else {
-		fmt.Println(">>>>>>>请输入合法范围的数值<<<<<<<")
+		fmt.Println(">>>>>>> 请输入合法范围的数值 <<<<<<<")
 		return false
 	}
 }
@@ -79,14 +79,17 @@ func (client *Client) PrivateChat() {
 	var remoteName string
 	var chatMsg string
 
+	client.SelectUsers()
+	fmt.Println((">>>>>>> 请输入聊天对象[用户名]，exit退出"))
+	fmt.Scanln(&remoteName)
+
 	for remoteName != "exit" {
-		client.SelectUsers()
-		fmt.Println((">>>>>>>请输入聊天对象[用户名]，exit退出"))
-		fmt.Scanln(&remoteName)
+
+		fmt.Println(">>>>>>> 请输入要对[" + remoteName + "]说的话，exit退出")
+		fmt.Scanln(&chatMsg)
 
 		for chatMsg != "exit" {
-			fmt.Println(">>>>>>> 请输入聊天消息内容，exit退出")
-			fmt.Scanln(&chatMsg)
+
 			//消息不为空则发送
 			if len(chatMsg) != 0 {
 				sendMsg := "to|" + remoteName + "|" + chatMsg + "\n\n"
@@ -97,7 +100,14 @@ func (client *Client) PrivateChat() {
 				}
 			}
 			chatMsg = ""
+			fmt.Println(">>>>>>> 请输入要对[" + remoteName + "]说的话，exit退出")
+			fmt.Scanln(&chatMsg)
 		}
+
+		client.SelectUsers()
+		fmt.Println((">>>>>>> 请输入聊天对象[用户名]，exit退出"))
+		fmt.Scanln(&remoteName)
+
 	}
 }
 
@@ -118,11 +128,13 @@ func (client *Client) PublicChat() {
 	//提示用户输入消息
 	var chatMsg string
 
+	fmt.Println(">>>>>>> 请输入聊天内容，exit退出")
+	fmt.Scanln(&chatMsg)
+
 	for chatMsg != "exit" {
 		//发给服务器
-		fmt.Println(">>>>>>> 请输入聊天内容，exit退出")
-		fmt.Scanln(&chatMsg)
-		//消息不为空这发送
+
+		//消息不为空则发送
 		if len(chatMsg) != 0 {
 			sendMsg := chatMsg + "\n"
 			_, err := client.conn.Write([]byte(sendMsg))
@@ -133,6 +145,8 @@ func (client *Client) PublicChat() {
 		}
 
 		chatMsg = ""
+		fmt.Println(">>>>>>> 请输入聊天内容，exit退出")
+		fmt.Scanln(&chatMsg)
 	}
 }
 

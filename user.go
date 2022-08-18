@@ -106,7 +106,7 @@ func (this *User) DoMessage(msg string) {
 			this.SendMsg("消息内容为空，请重发\n")
 			return
 		}
-		remoteUser.SendMsg(this.Name + "【私聊】:" + content)
+		remoteUser.SendMsg("【私聊】" + this.Name + ":" + content)
 
 	} else {
 		this.server.Broadcast(this, msg)
