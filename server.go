@@ -47,7 +47,7 @@ func (this *Server) ListenMessager() {
 
 // 广播消息
 func (this *Server) Broadcast(user *User, msg string) {
-	sendMsg := "【公聊】" + user.Name + ":" + msg
+	sendMsg := "[ 世界消息 ]" + user.Name + ": " + msg + "\n"
 	this.Message <- sendMsg
 }
 
