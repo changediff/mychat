@@ -52,7 +52,7 @@ func (this *User) Offline() {
 	this.server.mapLock.Unlock()
 
 	//广播下线消息
-	this.server.Broadcast(this, "已下线")
+	this.server.Broadcast(this, Colorize("已下线", FgBlack, BgWhite))
 }
 
 //给当前User的客户端发消息，不群发
@@ -61,7 +61,10 @@ func (this *User) SendMsg(msg string) {
 }
 
 func (this *User) DoMessage(msg string) {
-	if msg == "/who" {
+	if msg == "/help" {
+		context := "/help 帮助\n/who 查询在线用户\n/w <用户名> <消息> 私聊\n/r <消息> 快速回复私聊\n/rename <用户名> 改名"
+		this.SendMsg(Colorize(context, FgBlack, BgWhite))
+	} else if msg == "/who" {
 		//查询当前在线用户都有哪些
 		this.server.mapLock.Lock()
 		for _, user := range this.server.OnlineMap {
@@ -96,13 +99,13 @@ func (this *User) DoMessage(msg string) {
 		remoteUser.LastReplyUser = this
 
 	} else if len(msg) >= 9 && msg[:8] == "/rename " {
-		//改名消息格式： /rename 张三
+		//改名消息格式： /rename 阿成
 		newName := strings.Split(msg, " ")[1]
 
 		//判断name是否存在
 		_, ok := this.server.OnlineMap[newName]
 		if ok {
-			this.SendMsg(Colorize("当前用户名已被占用，请尝试其他用户名", FgWhite, BgMagenta))
+			this.SendMsg(Colorize("当前用户名已被占用，请尝试其他用户名", FgBlack, BgYellow))
 		} else {
 			this.server.mapLock.Lock()
 			delete(this.server.OnlineMap, this.Name)
@@ -110,16 +113,18 @@ func (this *User) DoMessage(msg string) {
 			this.server.mapLock.Unlock()
 
 			this.Name = newName
-			this.SendMsg(Colorize("用户名已更新为:"+this.Name, FgWhite, BgMagenta))
+			this.SendMsg(Colorize("用户名已更新为:"+this.Name, FgBlack, BgWhite))
 		}
 	} else if len(msg) >= 4 && msg[:3] == "/r " {
 		content := strings.Join(strings.Split(msg, " ")[1:], " ")
 		if this.LastReplyUser == nil {
-			this.SendMsg(Colorize("最近无私聊消息，无法快速回复", FgWhite, BgMagenta))
+			this.SendMsg(Colorize("最近无私聊消息，无法快速回复", FgBlack, BgWhite))
 		} else {
 			this.LastReplyUser.SendMsg(Colorize("[ 来自 "+this.Name+" ]"+": "+content, FgBlue, BgDefault))
 			this.LastReplyUser.LastReplyUser = this //套娃🪆，怎么简化？
 		}
+	} else if msg == "" {
+		this.SendMsg(Colorize("请输入消息", FgBlack, BgYellow))
 	} else {
 		this.server.Broadcast(this, msg)
 	}
